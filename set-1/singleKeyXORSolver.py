@@ -26,4 +26,4 @@ while i < 255:
         result_e_cnt = e_cnt
     i += 1
 print("RESULT : ")
-print hexXORkey.hexXORkey(sys.argv[1], format(result_i, '02x'))
+print(hexXORkey.hexXORkey(sys.argv[1], format(result_i, '02x')))

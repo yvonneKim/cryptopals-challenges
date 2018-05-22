@@ -1,23 +1,25 @@
 # stolen shamelessly from stackoverflow
+# takes in file, prints out the key used to decrypt, and returns decrypted message
 
 import binascii, sys, collections
 
 
 def main():
     with open(sys.argv[1], 'rb') as f:
-        content = f.readlines()
-    singleByteXorCipher(content)
-
+        with open(sys.argv[1]+'.out', 'w+') as outf:
+            for content in f.readlines():
+                out = singleByteXorCipher(content)
+                outf.write(out+'\n')
+        
 
 def singleByteXorCipher(content):
-    
-    content = content.strip()
+
     result_list = {}
-    nums = binascii.unhexlify(content)
+    nums = binascii.unhexlify(content.strip())
     for key in range(256): # does for every possible key
         result = ""
         for num in nums: # byte by byte operation
-            x = ord(num) ^ key
+            x = num ^ key
             result += chr(x)
         result_list[result] = key
 
@@ -36,8 +38,9 @@ def singleByteXorCipher(content):
             result_cnt = cnt
             result_string = result
             result_key = result_list[result]
-            
-    return chr(result_key)
+
+    print("RESULT KEY IS "+ chr(result_key))
+    return result_string
 
 if __name__ == "__main__":
     main()

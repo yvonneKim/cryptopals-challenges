@@ -19,4 +19,4 @@ for i in range(len(b1)):
     result.append(b1[i] ^ b2[i])
 
 with open(arg1+"XOR"+arg2, 'w+') as outf:
-    outf.write(binascii.b2a_hex(result)+"\n")
+    outf.write(binascii.hexlify(result).decode('utf-8')+"\n")

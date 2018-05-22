@@ -33,10 +33,10 @@ for keysize in range(2, max_key_len):
     final_ham = total_hams / final_i
     hams[keysize] = final_ham
 
-print hams
+print(hams)
 hams = sorted(hams.iteritems(), key=lambda (k,v): (v,k))
 probable_keysizes = [hams[0][0], hams[1][0], hams[2][0]] # 3 of the most probable keysizes
-print probable_keysizes
+print(probable_keysizes)
 total_block = ''.join(content) # makes all strings into one big string
 chunks = [total_block[i:i+keysize] for i in range(0, len(total_block), keysize)]
 
@@ -62,4 +62,4 @@ for keysize in probable_keysizes:
             if i < len(bl):
                 final_string += bl[i]
 
-    print final_string
+    print(final_string)
