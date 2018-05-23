@@ -1,65 +1,54 @@
 # breaks repeating-key XOR cipher
 # takes in file as argument
 
-import sys, binascii, hammingDistance, singleByteXorCipher
+import sys, binascii, base64
+from hammingDistance import hammingDistance as hamdist
+byteXorCipher = __import__('3_singleByteXorCipher')
+
 
 infile = sys.argv[1]
 
 # load every line into a string array
-with open(infile, 'rb') as f:
+with open(infile, 'r') as f:
     content = f.readlines()
-#    content = map(str.strip, content)
-    content = ''.join(content) # is now one big string
+    content = ''.join([c.strip() for c in content]) # is now one big string
+    # un-b64 it
+    content = base64.b64decode(content)
 
-# trying keysizes from 2 to, say, 40
-data_len = len(content)
-max_key_len = 41
-hams = {}
-for keysize in range(2, max_key_len):
-    total_hams = 0
-    final_i = 0
-    for i in range(0, data_len, 2*keysize):
-        if final_i >= 4: # program runs for too long otherwise
-            break
-        b1 = content[i:i+keysize]
-        b2 = content[i+keysize:i+(2*keysize)]
-        if len(b1) != len(b2): # reached end?
-            break
-        ham_dist = float(hammingDistance.hammingDistance(b1, b2))
-        ham_dist /= keysize
-        hams[keysize] = ham_dist
-        final_i += 1
-        total_hams += ham_dist
-    final_ham = total_hams / final_i
-    hams[keysize] = final_ham
+blocksize = 0
+min_ham = 41
+for bsize in range(2, 41):
+    b1 = binascii.hexlify(content[0:bsize]).decode('utf-8')
+    b2 = binascii.hexlify(content[bsize:bsize*2]).decode('utf-8')
+    ham = hamdist(b1, b2) / bsize
+    if ham <= min_ham:
+        min_ham = ham
+        blocksize = bsize
 
-print(hams)
-hams = sorted(hams.iteritems(), key=lambda (k,v): (v,k))
-probable_keysizes = [hams[0][0], hams[1][0], hams[2][0]] # 3 of the most probable keysizes
-print(probable_keysizes)
-total_block = ''.join(content) # makes all strings into one big string
-chunks = [total_block[i:i+keysize] for i in range(0, len(total_block), keysize)]
+# then get the blocks
+i = 0
+blocks = []
+while i + blocksize < len(content):
+    start = i
+    end = start + blocksize
+    blocks.append(content[start:end])
+    i += blocksize
+    
+# transpose them
+char_blocks = [x[0] for x in zip(blocks)]
+# each ith byte of the leftover block appended to it's corresponding
+# char block. (since we're in hex, it's 2 chars per byte)
+end_block = content[i:]
+i = 0
+while i < len(end_block):
+    char_blocks[i] += end_block[i:i+2]
+    i += 2
+    
 
-# now, transposing the blocks. First byte from each chunk goes into block 1, so on
-for keysize in probable_keysizes:
-    blocks = []
-    for i in range(0, keysize):
-        bl = ""
-        for ch in chunks:
-            if i < len(ch):
-                bl += ch[i]
+# single byte XOR cipher for each of the new blocks
+key = ''
+for b in char_blocks:
+    k, _ = byteXorCipher.singleByteXorCipher(binascii.hexlify(b).decode('utf-8'))
+    key += chr(k)
 
-        blocks.append(binascii.hexlify(bl))
-
-    # then, solve each block as single-key XOR
-    solved_blocks = []
-    for bl in blocks:
-        solved_blocks.append(singleByteXorCipher.singleByteXorCipher(bl))
-
-    final_string = ""
-    for i in range(0, keysize):
-        for bl in solved_blocks:
-            if i < len(bl):
-                final_string += bl[i]
-
-    print(final_string)
+print("KEY IS : "+key)

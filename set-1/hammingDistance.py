@@ -3,7 +3,7 @@
 
 def hammingDistance(s1, s2):
     if len(s1) != len(s2):
-        print "STRINGS NOT SAME LENGTH. BYE."
+        print("STRINGS NOT SAME LENGTH. BYE.")
         return -1
 
     cnt = 0
