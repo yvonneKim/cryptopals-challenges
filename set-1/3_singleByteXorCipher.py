@@ -13,7 +13,6 @@ def main():
         
 
 def singleByteXorCipher(content):
-    print(content)
     result_string = ''
     result_key = ''
     max_cnt = 0
@@ -28,15 +27,15 @@ def singleByteXorCipher(content):
             x = num ^ key
             line += chr(x)
 
+        # summing unigrams
         cnt = sum([char_freq[c] for c in line if c in char_freq])
 
         if cnt >= max_cnt:
-            print(" CNT : "+str(cnt))
-            print(" STRING : "+line)
-
+#            print(line)            
             max_cnt = cnt
             result_string = line
             result_key = key
+
 
     return (chr(result_key), result_string)
             
