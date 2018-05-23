@@ -5,14 +5,14 @@ import binascii, sys
 with open(sys.argv[1], 'rb') as f:
     content = f.readlines()
 
-key = bytes(sys.argv[2]) 
+key = bytes(sys.argv[2], 'utf-8') 
 output = []
 k_index = 0
 for l in content:
     line = l
     out_line = ""
     for byte in line:
-        x = ord(byte) ^ ord(key[k_index])
+        x = byte ^ key[k_index]
         out_line += format(x, 'x').zfill(2)
         
         if k_index == 2:
