@@ -3,7 +3,7 @@
 
 import sys, binascii
 
-def hexXORkey(arg1, arg2):
+def hexXorKey(arg1, arg2):
     key = bytearray(binascii.unhexlify(arg2.strip()))
 
     # read input file
