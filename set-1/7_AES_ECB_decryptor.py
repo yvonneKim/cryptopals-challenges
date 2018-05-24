@@ -16,18 +16,26 @@ if len(data) % bsize != 0:
     print("PADDING NOW")
     data = data.ljust(num_blocks, bytes(len(data) % bsize)[0])
 
-ptext_blocks = []
-# decryption block by block backwards n-1 times (stop at 2nd block)
-block_gen = lambda d, b: ((d[i-(2*b):i-b], d[i-b:i]) for i in range(b*num_blocks, b, -b))
-for blocks in block_gen(data, bsize):
-    iv = blocks[0]
-    ctext = blocks[1]
-
-    cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=backend)
-    decryptor = cipher.decryptor()
-    ptext = decryptor.update(ctext) + decryptor.finalize()
-    ptext_blocks.append(ptext)
+cipher = Cipher(algorithms.AES(key), modes.ECB(), backend=backend)
+decryptor = cipher.decryptor()
+ptext = decryptor.update(data) + decryptor.finalize()
 
 with open(sys.argv[1]+'.out', 'wb') as f:
-    out = b''.join(ptext_blocks)
-    f.write(out)
+    f.write(ptext)
+# decrypting block by block?
+#block_gen = lambda d, b, n: (d[i:i+b] for i in range(0, b*(n-1), b))
+#ptext_blocks = []
+# decryption block by block backwards n-1 times (stop at 2nd block)
+# block_gen = lambda d, b: ((d[i-(2*b):i-b], d[i-b:i]) for i in range(b*num_blocks, b, -b))
+# for blocks in block_gen(data, bsize):
+#     iv = blocks[0]
+#     ctext = blocks[1]
+
+#     cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=backend)
+#     decryptor = cipher.decryptor()
+#     ptext = decryptor.update(ctext) + decryptor.finalize()
+#     ptext_blocks.append(ptext)
+
+# with open(sys.argv[1]+'.out', 'wb') as f:
+#     out = b''.join(ptext_blocks)
+#     f.write(out)
