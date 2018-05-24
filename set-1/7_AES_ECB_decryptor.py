@@ -3,26 +3,36 @@ import os, sys, base64
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.backends import default_backend
 
-with open(sys.argv[1], 'r') as f:
-    data = base64.b64decode(''.join([x.strip() for x in f.readlines()]))
+def main():
+    with open(sys.argv[1], 'r') as f:
+        data = base64.b64decode(''.join([x.strip() for x in f.readlines()]))
 
-key = b'YELLOW SUBMARINE' # that's what they want from me for this challenge! change later
-backend = default_backend()
+    key = sys.argv[2].encode('utf-8')
+    decryptor(data, key)
 
-# PKCS7 padding to the next bsize multiple
-bsize = len(key)
-num_blocks = (len(data) + bsize -1) // bsize
-if len(data) % bsize != 0:
-    print("PADDING NOW")
-    data = data.ljust(num_blocks, bytes(len(data) % bsize)[0])
+def decryptor(data, key):
+    backend = default_backend()
 
-cipher = Cipher(algorithms.AES(key), modes.ECB(), backend=backend)
-decryptor = cipher.decryptor()
-ptext = decryptor.update(data) + decryptor.finalize()
+    # PKCS7 padding to the next bsize multiple
+    bsize = len(key)
+    num_blocks = (len(data) + bsize -1) // bsize
+    if len(data) % bsize != 0:
+        print("PADDING NOW")
+        data = data.ljust(num_blocks, bytes(len(data) % bsize)[0])
 
-with open(sys.argv[1]+'.out', 'wb') as f:
-    f.write(ptext)
-# decrypting block by block?
+    cipher = Cipher(algorithms.AES(key), modes.ECB(), backend=backend)
+    decryptor = cipher.decryptor()
+    ptext = decryptor.update(data) + decryptor.finalize()
+
+    with open(sys.argv[1]+'.out', 'wb') as f:
+        f.write(ptext)
+
+
+if __name__=='__main__':
+    main()
+####
+#### THIS CODE IS FOR CBC BUT IT MIGHT BE HANDY LATER ####
+####
 #block_gen = lambda d, b, n: (d[i:i+b] for i in range(0, b*(n-1), b))
 #ptext_blocks = []
 # decryption block by block backwards n-1 times (stop at 2nd block)
