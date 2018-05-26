@@ -11,7 +11,6 @@ def main():
         data = b''.join((base64.b64decode(x.strip()) for x in f.readlines()))
         key = b'YELLOW SUBMARINE'
         iv = b'\x00' * len(key)
-        print(len(iv))
 
         # decrypt the test file
         d = decrypt(data, key, iv)
@@ -25,44 +24,45 @@ def main():
             print("VERIFIED!")
         else:
             print("ERROR - original differs from encrypted")
+            print(bxor(d, e))
 
 
 def decrypt(data, key, iv):
-    backend = default_backend()
-    # backwards block traversal to the second block
-    block_gen = lambda d, b, e: ((d[i-b-b:i-b], d[i-b:i]) for i in range(e, 2*b, -b))
-    cipher = Cipher(algorithms.AES(key), modes.ECB(), backend=backend)
+    bsize = len(key)    
+    blocks = [data[i:i+bsize] for i in range(0, len(data)-bsize, bsize)]
+    blocks.insert(0, iv)
+    cipher = Cipher(algorithms.AES(key), modes.ECB(), backend=default_backend())
     
     ptext_blocks = []
-    for i, b in block_gen(data, len(key), len(data)):
-        d = cipher.decryptor().update(b)
-        ptext_blocks.append(bxor(d, i)) # xor with the previous block = plain text
+    for i in range(len(blocks)-1, 1, -1):
+        cur = blocks[i]
+        prev = blocks[i-1]
 
-    # for the last (actually, first) block, do same with the iv
-    first = d[0:len(key)]
-    first = cipher.decryptor().update(first)
-    ptext_blocks.append(bxor(first, iv))
+        cur = cipher.decryptor().update(cur)
+        cur = bxor(cur, prev)
+        ptext_blocks.append(cur) 
 
     ptext_blocks.reverse()
     return b''.join(ptext_blocks)
 
-def encrypt(data, key, iv):
-    backend = default_backend()
-    # goes through all blocks starting from 2nd block
-    block_gen = lambda c, d, b, e: ((c[i:i+b], d[i+b:i+b+b]) for i in range(0, e, b))
-    cipher = Cipher(algorithms.AES(key), modes.ECB(), backend=backend)
-    
-    ctext = b''
-    
-    # first block, XOR with iv and then encrypt
-    d = bxor(data[0:len(key)], iv)
-    ctext += cipher.encryptor().update(d)
-    
-    for c, b in block_gen(ctext, data, len(key), len(data)):
-        d = bxor(c, b)
-        ctext += cipher.encryptor().update(d)
 
-    return ctext
+def encrypt(data, key, iv):
+    bsize = len(key)
+    blocks = [data[i:i+bsize] for i in range(0, len(data)-bsize, bsize)]
+    cipher = Cipher(algorithms.AES(key), modes.ECB(), backend=default_backend())
+
+    ctext_blocks = [iv]
+    for i in range(0, len(blocks)):
+        cur = blocks[i]
+        prev = ctext_blocks[i]
+
+        cur = bxor(cur, prev)
+        cur = cipher.encryptor().update(cur)
+        ctext_blocks.append(cur)
+        
+    ctext_blocks.pop(0) # because this would be the iv block
+    return b''.join(ctext_blocks)
+
 
 if __name__=='__main__':
     main()
