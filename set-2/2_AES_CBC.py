@@ -28,13 +28,13 @@ def main():
 
 
 def decrypt(data, key, iv):
+    data = iv + data
     bsize = len(key)    
-    blocks = [data[i:i+bsize] for i in range(0, len(data)-bsize, bsize)]
-    blocks.insert(0, iv)
+    blocks = [data[i:i+bsize] for i in range(0, len(data)-bsize+1, bsize)]
     cipher = Cipher(algorithms.AES(key), modes.ECB(), backend=default_backend())
     
     ptext_blocks = []
-    for i in range(len(blocks)-1, 1, -1):
+    for i in range(len(blocks)-1, 0, -1):
         cur = blocks[i]
         prev = blocks[i-1]
 
@@ -48,7 +48,7 @@ def decrypt(data, key, iv):
 
 def encrypt(data, key, iv):
     bsize = len(key)
-    blocks = [data[i:i+bsize] for i in range(0, len(data)-bsize, bsize)]
+    blocks = [data[i:i+bsize] for i in range(0, len(data)-bsize+1, bsize)]
     cipher = Cipher(algorithms.AES(key), modes.ECB(), backend=default_backend())
 
     ctext_blocks = [iv]
@@ -60,6 +60,7 @@ def encrypt(data, key, iv):
         cur = cipher.encryptor().update(cur)
         ctext_blocks.append(cur)
         
+
     ctext_blocks.pop(0) # because this would be the iv block
     return b''.join(ctext_blocks)
 
