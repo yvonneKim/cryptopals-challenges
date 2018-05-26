@@ -19,7 +19,7 @@ def main():
             outf.write(d)
 
         # then encrypt it again and diff
-        e = encrypt(d, key)
+        e = encrypt(d, key, iv)
 
         if e == data:
             print("VERIFIED!")
@@ -39,30 +39,30 @@ def decrypt(data, key, iv):
         ptext_blocks.append(bxor(d, i)) # xor with the previous block = plain text
 
     # for the last (actually, first) block, do same with the iv
-    first_block = d[0:len(key)]
-    d = cipher.decryptor().update(first_block)
-    ptext_blocks.append(bxor(d, iv))
+    first = d[0:len(key)]
+    first = cipher.decryptor().update(first)
+    ptext_blocks.append(bxor(first, iv))
 
     ptext_blocks.reverse()
     return b''.join(ptext_blocks)
 
-### TO DO ###
-# def encrypt(data, key, iv):    
-#     block_gen = lambda d, b, n: (d[i:i+b] for i in range(0, b*(n-1), b))
-#     ptext_blocks = []
+def encrypt(data, key, iv):
+    backend = default_backend()
+    # goes through all blocks starting from 2nd block
+    block_gen = lambda c, d, b, e: ((c[i:i+b], d[i+b:i+b+b]) for i in range(0, e, b))
+    cipher = Cipher(algorithms.AES(key), modes.ECB(), backend=backend)
     
-#     for blocks in block_gen(data, bsize, bsize):
-        
+    ctext = b''
+    
+    # first block, XOR with iv and then encrypt
+    d = bxor(data[0:len(key)], iv)
+    ctext += cipher.encryptor().update(d)
+    
+    for c, b in block_gen(ctext, data, len(key), len(data)):
+        d = bxor(c, b)
+        ctext += cipher.encryptor().update(d)
 
-        
-#         ctext = blocks[1]
-
-#         cipher = Cipher(algorithms.AES(key), modes.ECB(), backend=backend)
-#         decryptor = cipher.decryptor()
-#         ptext = decryptor.update(ctext) + decryptor.finalize()
-#         ptext_blocks.append(ptext)
-#         return ''.join(ptext_blocks)
-
+    return ctext
 
 if __name__=='__main__':
     main()
