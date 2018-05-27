@@ -1,4 +1,4 @@
-# AES CBC encryptor.decryptor- doing it manually!
+# AES CBC encryptor/decryptor- doing it manually!
 
 import os, sys, base64, binascii
 from byteXor import xor as bxor
