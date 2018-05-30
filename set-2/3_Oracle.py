@@ -5,12 +5,14 @@ import sys, os, random
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.backends import default_backend
 
-def __CBC_encrypt(ptext):
+def __CBC_encrypt(ptext, key):
+    print("CBC")
     iv = os.urandom(16)
     cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
     return cipher.encryptor().update(ptext)
     
-def ECB_encrypt(ptext):
+def __ECB_encrypt(ptext, key):
+    print("ECB")
     cipher = Cipher(algorithms.AES(key), modes.ECB(), backend=default_backend())
     return cipher.encryptor().update(ptext)
 
@@ -21,17 +23,21 @@ def random_encrypt(ptext):
     
     key = os.urandom(16) # has to be 16 for the challenge
     ptext = os.urandom(random.randint(5, 10)) + ptext + os.urandom(random.randint(5, 10))
-    print(ptext)
-    algos = ['__CBC_encrypt', '__ECB_encrypt']
-    ctext = getattr(self, algos[random.randint(0, 1)])(ptext)
-    print(ctext)
+    algos = {0: __CBC_encrypt, 1: __ECB_encrypt}
+    return algos[random.randint(0, 1)](ptext, key)
+
+def analyze(ctext):
+    
 
 def main():
     filename = sys.argv[1]
     with open(filename, 'rb') as f:
-        random_encrypt(b''.join((x.strip() for x in f.readlines())))
-        analyze(b''.join((x.strip() for x in f.readlines())))
-                
+        ctext = random_encrypt(b''.join((x.strip() for x in f.readlines())))
+        if analyze(ctext) == 'CBC':
+            print("This smells like a CBC to me!")
+        else:
+            print("This smells like an ECB to me!")
+
 
 def analyze(data):
     pass
