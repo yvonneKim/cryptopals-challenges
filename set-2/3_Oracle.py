@@ -32,8 +32,7 @@ def random_encrypt(ptext):
     algos = {0: __CBC_encrypt, 1: __ECB_encrypt}
     return algos[random.randint(0, 1)](ptext, key)
 
-def analyze(data):
-    bsize = 8
+def analyze(data, bsize):
     # what size "blocks" to use for frequency analysis? start with 16?
     blocks = Counter([data[i:i+bsize] for i in range(0, len(data)-bsize+1, bsize)])
     if blocks.most_common(1)[0][1] >= 5: # adjust this number?
@@ -44,7 +43,7 @@ def main():
     filename = sys.argv[1]
     with open(filename, 'rb') as f:
         ctext = random_encrypt(b''.join((x.strip() for x in f.readlines())))
-        analyzed = analyze(ctext)
+        analyzed = analyze(ctext, 8)
         if analyzed == 'CBC':
             print("This smells like a CBC to me!")
         elif analyzed == 'ECB':
