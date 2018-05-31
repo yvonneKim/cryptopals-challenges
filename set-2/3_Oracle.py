@@ -2,6 +2,8 @@
 # with ECB or CBC.
 
 import sys, os, random
+from collections import Counter
+PKCS7 = __import__('1_PKCS7')
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.backends import default_backend
 
@@ -23,25 +25,30 @@ def random_encrypt(ptext):
     
     key = os.urandom(16) # has to be 16 for the challenge
     ptext = os.urandom(random.randint(5, 10)) + ptext + os.urandom(random.randint(5, 10))
+    ptext = PKCS7.pad(ptext, len(key))
     algos = {0: __CBC_encrypt, 1: __ECB_encrypt}
     return algos[random.randint(0, 1)](ptext, key)
 
-def analyze(ctext):
-    
+def analyze(data):
+    bsize = 2
+    # what size "blocks" to use for frequency analysis? start with 16?
+    blocks = Counter([data[i:i+bsize] for i in range(0, len(data)-bsize+1, bsize)])
+    print(blocks.most_common(100))
+    if blocks.most_common(1)[0][1] >= 3: # adjust this number?
+        return 'ECB'
+    return 'CBC'
 
 def main():
     filename = sys.argv[1]
     with open(filename, 'rb') as f:
         ctext = random_encrypt(b''.join((x.strip() for x in f.readlines())))
-        if analyze(ctext) == 'CBC':
+        analyzed = analyze(ctext)
+        if analyzed == 'CBC':
             print("This smells like a CBC to me!")
-        else:
+        elif analyzed == 'ECB':
             print("This smells like an ECB to me!")
-
-
-def analyze(data):
-    pass
-    
+        else:
+            print("I.... I don't know ....")
 
 
 if __name__=='__main__':
