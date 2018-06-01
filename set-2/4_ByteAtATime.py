@@ -7,10 +7,12 @@ from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.backends import default_backend
 
 def main():
-    global_key = os.urandom(16)
-    data = b'YELLOW SUBMARINE'
-    e = encrypt(data, global_key)
-    d = decrypt_msg(e, global_key)
+    with open(sys.argv[1], 'rb') as f:
+        global_key = os.urandom(16)
+        data = b''.join((x.strip() for x in f.readlines()))
+        e = encrypt(data, global_key)
+        d = decrypt_msg(e, global_key)
+        print(d)
 
 def encrypt(data, key):
     secret = """
@@ -24,7 +26,6 @@ def encrypt(data, key):
 def decrypt_msg(data, key):
     # Determine blocksize. Most likely 16 bytes.
     # The first i that results in a repeated first block is (bsize + 1)
-
     def get_bsize(data):
         prev = None
         for i in range(2, 32):
@@ -34,20 +35,36 @@ def decrypt_msg(data, key):
             elif prev == x[0:len(prev)]:
                 return i - 1
             else:
-                print(prev)
                 prev = x[0:i]
             
     bsize = get_bsize(data)
-    print(bsize)
 
+    # Is it ECB or CBC? Need to know from here on.
     d = Oracle.analyze(data, bsize)
     if d == 'ECB':
-        pass
+        print("ECB DETECTED")
     elif d == 'CBC':
-        pass
-    else:
-        pass
-    return data
+        print("CBC DETECTED- CANNOT CONTINUE ... for now :)")
+        return None
+
+    # Figuring out the secret message by feeding in byte at a time.
+    result = b''
+    offset = b'A'*(bsize - 1)
+    cur = encrypt(offset, key)[:bsize]
+    secret_size = len(encrypt(b'', key))
+    for x in range(0, secret_size): # for every byte of the secret message
+        for i in range(0, 256): # for every possible byte
+            c = i.to_bytes(1, byteorder='big') 
+            e = encrypt(offset + c, key)
+            if e[x:bsize+x] == cur:
+                result += c
+                offset = (offset + c)[1:]
+                break
+
+        cur = e[x:bsize+x]
+                
+    
+    return result
 
 if __name__=='__main__':
     main()
