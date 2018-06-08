@@ -49,21 +49,22 @@ def decrypt_msg(data, key):
 
     # Figuring out the secret message by feeding in byte at a time.
     result = b''
-    offset = b'A'*(bsize - 1)
-    cur = encrypt(offset, key)[:bsize]
     secret_size = len(encrypt(b'', key))
+    offset = b'A'*(secret_size - 1)
+    cur_offset = offset
+
     for x in range(0, secret_size): # for every byte of the secret message
+        cur = encrypt(cur_offset, key)[secret_size-bsize:secret_size]
         for i in range(0, 256): # for every possible byte
-            c = i.to_bytes(1, byteorder='big') 
-            e = encrypt(offset + c, key)
-            if e[x:bsize+x] == cur:
-                result += c
+            c = i.to_bytes(1, byteorder='big')
+            e = encrypt(offset + c, key)[secret_size-bsize:secret_size]
+            if e == cur:
                 offset = (offset + c)[1:]
+                cur_offset = cur_offset[1:]
+                result += c
                 break
 
-        cur = e[x:bsize+x]
-                
-    
+
     return result
 
 if __name__=='__main__':
