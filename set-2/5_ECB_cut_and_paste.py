@@ -1,6 +1,8 @@
 # k=v parser
 import sys
-ECB = __import__('AES_ECB')
+sys.path.append('/home/Documents/crypto-challenges/')
+import cryptography
+import cryptocommon
 
 def main():
     test_profile = {
@@ -9,7 +11,8 @@ def main():
         'role': 'user'
         }
     test_profile_string = KVStringify(test_profile)
-    encrypted_string = ECB.encrypt(test_profile_string)
+    encrypted_string = ECB.encryptor(test_profile_string, )
+    print(encrypted_string)
 
     ## then, attacker must decode and reconstruct test_profile
     

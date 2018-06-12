@@ -8,5 +8,6 @@ python_version = "3.5"
 
 [packages]
 cryptography = "*"
+"e1839a8" = {editable = true, path = "."}
 
 [dev-packages]
