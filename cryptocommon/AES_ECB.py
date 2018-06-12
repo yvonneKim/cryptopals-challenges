@@ -1,4 +1,4 @@
-import os, sys, base64, PKCS7
+import os, sys, base64, cryptocommon.PKCS7
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.backends import default_backend
 

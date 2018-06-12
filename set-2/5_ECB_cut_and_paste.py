@@ -1,8 +1,7 @@
 # k=v parser
-import sys
-sys.path.append('/home/Documents/crypto-challenges/')
-import cryptography
-import cryptocommon
+import sys, os
+sys.path.append(os.path.abspath('..'))
+from cryptocommon import AES_ECB as ECB
 
 def main():
     test_profile = {
