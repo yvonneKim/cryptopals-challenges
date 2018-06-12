@@ -1,8 +1,18 @@
 # k=v parser
+import sys
+ECB = __import__('AES_ECB')
 
 def main():
-    print(parseKVString('foo=bar&baz=qux&zap=zazzle'))
-    print(profileFor('poop@poop.com&&&&&====='))
+    test_profile = {
+        'email': 'foo@bar.com',
+        'uid': 10,
+        'role': 'user'
+        }
+    test_profile_string = KVStringify(test_profile)
+    encrypted_string = ECB.encrypt(test_profile_string)
+
+    ## then, attacker must decode and reconstruct test_profile
+    
 
 def parseKVString(data):
     result = {pair[0]: pair[1] for pair in (pair_str.split('=') for pair_str in data.split('&'))}

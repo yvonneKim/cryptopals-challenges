@@ -22,5 +22,16 @@ def decryptor(data, key, bsize):
     ptext = decryptor.update(data) + decryptor.finalize()
     return ptext
 
+
+def encryptor(data, key, bsize):
+    # PKCS7 padding to the next bsize multiple
+    data = PKCS7.pad(data, bsize)
+
+    cipher = Cipher(algorithms.AES(key), modes.ECB(), backend=default_backend())
+    encryptor = cipher.encryptor()
+    ptext = encryptor.update(data) + encryptor.finalize()
+    return ptext
+
+
 if __name__=='__main__':
     main()
