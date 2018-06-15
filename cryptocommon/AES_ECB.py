@@ -1,6 +1,8 @@
 import os, sys, base64, cryptocommon.PKCS7
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.backends import default_backend
+from cryptocommon import PKCS7 as PKCS7
+sys.path.append(os.path.abspath('..'))
 
 def main():
     with open(sys.argv[1], 'r') as f:

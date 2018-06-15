@@ -3,6 +3,7 @@ import sys, os
 sys.path.append(os.path.abspath('..'))
 from cryptocommon import AES_ECB as ECB
 
+
 def main():
     test_profile = {
         'email': 'foo@bar.com',
@@ -10,7 +11,7 @@ def main():
         'role': 'user'
         }
     test_profile_string = KVStringify(test_profile)
-    encrypted_string = ECB.encryptor(test_profile_string, )
+    encrypted_string = ECB.encryptor(test_profile_string.encode('utf-8'), key=os.urandom(16), bsize=16)
     print(encrypted_string)
 
     ## then, attacker must decode and reconstruct test_profile
