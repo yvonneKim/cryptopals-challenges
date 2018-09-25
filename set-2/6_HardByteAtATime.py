@@ -11,14 +11,11 @@ from cryptography.hazmat.backends import default_backend
 rand_prefix = os.urandom(random.randint(1, 64))
 
 def main():
-    print(rand_prefix)
-    print(len(rand_prefix))
     with open(sys.argv[1], 'rb') as f:
         global_key = os.urandom(16)
         data = b''.join((x.strip() for x in f.readlines()))
         e = encrypt(data, global_key)
         d = decrypt_msg(e, global_key)
-        print(d)
 
 
 def encrypt(data, key):
@@ -46,15 +43,6 @@ def decrypt_msg(data, key):
         return 16
 
     bsize = get_bsize(data)
-
-    # Is it ECB or CBC? Need to know from here on.
-    # d = Oracle.analyze(data, bsize)
-    # if d == 'ECB':
-    #     print("ECB DETECTED")
-    # elif d == 'CBC':
-    #     print("CBC DETECTED- CANNOT CONTINUE ... for now :)")
-    #     return None
-
     
     # Where is the last partially full block of the random prefix?
     no_inject_e = encrypt(b'', key)
@@ -63,58 +51,54 @@ def decrypt_msg(data, key):
     while no_inject_e[rp_start:rp_start+bsize] == injected_e[rp_start:rp_start+bsize]:
         rp_start = rp_start + bsize
 
-    rp_total_size = rp_start
-    print("rp total size initially is ")
-    print(rp_total_size)
-    print("rp start initially is ")
-    print(rp_start)
 
-    
     # Figuring out random prefix size
+    rp_total_size = 0 # rp_start + rp_end = rp_total_size
     rp_end = 0
-    e_prev = no_inject_e
-    for x in range(1, bsize+1):
-        e_cur = encrypt(b'A'*x, key)
+    nextPhaseStart= rp_start + bsize
+    e_cur = injected_e
+    for x in range(2, bsize+2): # start with injected_e and two because adding one
+        e_next = encrypt(b'A'*x, key)
 
-        b_prev = e_prev[rp_start : rp_start+bsize]
-        b_cur = e_cur[rp_start: rp_start+bsize]
+        b_cur = e_cur[rp_start : rp_start + bsize]
+        b_next = e_next[rp_start: rp_start + bsize]
         
-        if b_prev == b_cur:
-            rp_end = (bsize - x + 1) # always between 1 and bsize- is the finishing length
-            print("rp_end is")
-            print(rp_end)
-            rp_total_size = rp_total_size + rp_end
-            print("rp total size is NOW: ")
-            print(rp_total_size)
+        if b_cur == b_next:
+            # for example, if this clause is entered on first iteration, RP was one byte away from boundary
+            rp_end = (bsize - x +1) # always between 1 and bsize- is the finishing length
+            rp_total_size = rp_start + rp_end
             break
         
-        e_prev = e_cur
+        e_cur = e_next
 
-        
-    print("rp_total_size is: ")
+    print(rp_start)
+    print(rp_end)
     print(rp_total_size)
 
-    rounded_offset = rp_total_size + ((bsize - rp_total_size % bsize) % bsize)
-    print("rp_total_size rounded up is: ")
-    print(rounded_offset)
+    n = rp_end # padding amount
 
     # Figuring out the secret message by feeding in byte at a time.
     result = b''
-    secret_size = len(encrypt(b'', key))
-    offset = b'A' * (secret_size - 1)
+    secret_size = len(encrypt(b'A'*n, key)[nextPhaseStart:])
+    offset = b'A' * (secret_size - 1 + 3) # add n to ceiling it to next bsize
     cur_offset = offset
+    
 
     for x in range(0, secret_size):  # for every byte of the secret message
-        cur = encrypt(cur_offset, key)[secret_size - bsize:secret_size]
-        for i in range(0, 256):  # for every possible byte
+        checkBlockStart = nextPhaseStart + secret_size - bsize
+        checkBlockEnd = nextPhaseStart + secret_size
+        cur = encrypt(cur_offset, key)[checkBlockStart:checkBlockEnd]
+        for i in range(0, 256):  # for every possible byte - which one matches for cur?
             c = i.to_bytes(1, byteorder='big')
-            e = encrypt(offset + c, key)[secret_size - bsize:secret_size]
+            e = encrypt(offset + c, key)[checkBlockStart:checkBlockEnd]
             if e == cur:
                 offset = (offset + c)[1:]
                 cur_offset = cur_offset[1:]
                 result += c
                 break
 
+
+    print(result)
     return result
 
 
