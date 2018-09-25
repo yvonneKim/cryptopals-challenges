@@ -71,22 +71,40 @@ def decrypt_msg(data, key):
         
         e_cur = e_next
 
-    print(rp_start)
-    print(rp_end)
-    print(rp_total_size)
+    print("RP_START: "+str(rp_start))
+    print("RP_END: "+str(rp_end))
+    print("RP_TOTAL: "+str(rp_total_size))
+    print()
+    print("STARTING SOLVE AT: "+str(nextPhaseStart))
 
-    n = rp_end # padding amount
+
+    n = bsize - rp_end # padding amount
+    print("Amount to pad by: "+str(n))
+    print("Length with boundary padding in input: "+str(len(encrypt(b'A'*n, key))))
+    s = len(encrypt(b'A'*n, key)[nextPhaseStart:])
+    print("length from bondary start onwards: "+str(s))
+    secret_size = 0
+    
+    # what is the size of the secret?
+    for i in range(1, bsize):
+        wit = encrypt(b'A'*(n+i+1), key)
+        without = encrypt(b'A'*(n+i), key)
+        
+        if (len(wit) != len(without)):
+            secret_size = len(encrypt(b'A'*n, key)[nextPhaseStart:]) - bsize + i
+            print("FOUND secret size: "+str(secret_size))
+
 
     # Figuring out the secret message by feeding in byte at a time.
     result = b''
-    secret_size = len(encrypt(b'A'*n, key)[nextPhaseStart:])
-    offset = b'A' * (secret_size - 1 + 3) # add n to ceiling it to next bsize
+    offset = b'A' * (s - 1 + n) # add n to ceiling it to next bsize
     cur_offset = offset
-    
+    checkBlockStart = nextPhaseStart + s - bsize
+    checkBlockEnd = nextPhaseStart + s
+    print("block to check: "+str(checkBlockStart)+"-"+str(checkBlockEnd))
 
     for x in range(0, secret_size):  # for every byte of the secret message
-        checkBlockStart = nextPhaseStart + secret_size - bsize
-        checkBlockEnd = nextPhaseStart + secret_size
+
         cur = encrypt(cur_offset, key)[checkBlockStart:checkBlockEnd]
         for i in range(0, 256):  # for every possible byte - which one matches for cur?
             c = i.to_bytes(1, byteorder='big')
