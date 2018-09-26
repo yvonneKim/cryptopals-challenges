@@ -17,7 +17,7 @@ def main():
 
 def decryptor(data, key, bsize):
     # PKCS7 padding to the next bsize multiple
-    data = PKCS7.pad(data, bsize)
+    data = PKCS7.padPKCS7(data, bsize)
 
     cipher = Cipher(algorithms.AES(key), modes.ECB(), backend=default_backend())
     decryptor = cipher.decryptor()
@@ -27,7 +27,7 @@ def decryptor(data, key, bsize):
 
 def encryptor(data, key, bsize):
     # PKCS7 padding to the next bsize multiple
-    data = PKCS7.pad(data, bsize)
+    data = PKCS7.padPKCS7(data, bsize)
 
     cipher = Cipher(algorithms.AES(key), modes.ECB(), backend=default_backend())
     encryptor = cipher.encryptor()

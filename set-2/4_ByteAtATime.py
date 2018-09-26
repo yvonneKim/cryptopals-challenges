@@ -19,7 +19,7 @@ def encrypt(data, key):
     Um9sbGluJyBpbiBteSA1LjAKV2l0aCBteSByYWctdG9wIGRvd24gc28gbXkgaGFpciBjYW4gYmxvdwpUaGUgZ2lybGllcyBvbiBzdGFuZGJ5IHdhdmluZyBqdXN0IHRvIHNheSBoaQpEaWQgeW91IHN0b3A/IE5vLCBJIGp1c3QgZHJvdmUgYnkK
     """
     secret = base64.b64decode(secret)
-    data = PKCS7.pad(data + secret, len(key))
+    data = PKCS7.padPKCS7(data + secret, len(key))
     cipher = Cipher(algorithms.AES(key), modes.ECB(), backend=default_backend())
     return cipher.encryptor().update(data)
 

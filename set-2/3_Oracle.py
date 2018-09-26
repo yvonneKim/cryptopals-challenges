@@ -28,7 +28,7 @@ def random_encrypt(ptext):
     back = os.urandom(random.randint(5, 10))
                        
     ptext = front + ptext + back
-    ptext = PKCS7.pad(ptext, len(key))
+    ptext = PKCS7.padPKCS7(ptext, len(key))
     algos = {0: __CBC_encrypt, 1: __ECB_encrypt}
     return algos[random.randint(0, 1)](ptext, key)
 

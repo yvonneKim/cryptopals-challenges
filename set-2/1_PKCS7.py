@@ -3,6 +3,6 @@
 
 import math
 
-def pad(data, bsize):
+def padPKCS7(data, bsize):
     c = (bsize - (len(data) % bsize)) % bsize
     return data + (c*bytes([c]))
