@@ -1,5 +1,6 @@
-#Cryptopals Challenges
-###Set 1
+# Cryptopals Challenges
+
+### Set 1
 1. ~~Convert hex to base64~~
 2. ~~Fixed XOR~~
 3. ~~Single-byte XOR cipher~~
@@ -9,7 +10,7 @@
 7. ~~AES in ECB mode~~
 8. ~~Detect AES in ECB mode~~
 
-###Set 2
+### Set 2
 1. ~~Implement PKCS#7 padding~~
 2. ~~Implement CBC mode~~
 3. ~~An ECB/CBC detection oracle~~
