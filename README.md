@@ -18,4 +18,4 @@
 5. ~~ECB cut-and-paste~~
 6. ~~Byte-at-a-time ECB decryption (Harder)~~
 7. ~~PKCS#7 padding validation~~
-8. CBC bitflipping attacks
+8. ~~CBC bitflipping attacks~~
