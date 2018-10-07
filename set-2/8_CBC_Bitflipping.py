@@ -21,12 +21,16 @@ def main():
     with open(sys.argv[1], "r") as f:
         data = "".join([x.strip() for x in f.readlines()])
 
-    modified_data, e = encrypt(data)
+    modified_data, padded_modified_data, e = encrypt(data)
+    print("ORIGINAL DATA: ")
+    print(modified_data)
     desired_data = modified_data.replace('"', "")
-    difference = len(e) - len(desired_data)
-    desired_data = desired_data + (difference * "x")
-    d = decrypt(e, desired_data.encode("utf-8"))
-
+    desired_data = PKCS7.padPKCS7(desired_data.encode('utf-8'), bsize)
+    print("DESIRED DATA: ")
+    print(desired_data.decode('utf-8'))
+    d = decrypt(e, desired_data)
+    print("RESULT DECRYPTED: ")
+    print(d)
     # output to file
     # with open(sys.argv[1]+'.out', 'wb') as f:
     #     f.write(ptext)
@@ -51,17 +55,19 @@ def encrypt(data):
     # encryption with iv of all zeroes
     encrypted = CBC.encrypt(padded_data, key, iv)
 
-    return data, encrypted
+    return data, padded_data, encrypted
 
+def print_blocks(data, bsize):
+    for i in range(len(data), 0, -bsize):
+        print(data[i-bsize:i].decode('utf-8'))
 
 def decrypt(data, desired):
     dat = data[len(data) - bsize:len(data)]
     result = [dat]
     for i in range(len(data), 0, -bsize):
-        print("Result for iteration " + str(i) + " is: " + str(result))
         des = desired[i - bsize:i]
         decrypted_dat = CBC.decrypt(dat, key, iv)
-        dat = bxor(des, dat)
+        dat = bxor(des, decrypted_dat)
         result.append(dat)
 
     result.reverse()
