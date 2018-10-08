@@ -1,14 +1,16 @@
 # computes hamming distance of two byte strings
 # strings must be equal length. Otherwise, returns -1
 
-def hammingDistance(s1, s2):
-            
-    if len(s1) != len(s2):
-        raise Exception("bytes not same length")
+def hammingDistance(s1, s2):    
 
-    if type(s1) != bytes:
-        s1 = bytes(s1)
-        s2 = bytes(s2)
+    if len(s1) != len(s2):
+        raise ValueError("bytes not same length")
+
+    if type(s1) == str:
+        s1 = s1.encode('utf-8')
+        
+    if type(s2) == str:
+        s2 = s2.encode('utf-8')
 
     cnt = 0
     for i in range(len(s1)):
