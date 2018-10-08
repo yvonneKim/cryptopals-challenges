@@ -4,7 +4,6 @@ import pytest
 
 sys.path.append(os.path.abspath("../cryptocommon"))
 
-#ham = __import__("hammingDistance")
 from hammingDistance import hammingDistance as hamDist
 
 
