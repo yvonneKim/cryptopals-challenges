@@ -5,31 +5,27 @@ from byteXor import xor as bxor
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.backends import default_backend      
 
-def main():
-    filename = '10.txt'
-    with open(filename, 'r') as f:
-        data = b''.join((base64.b64decode(x.strip()) for x in f.readlines()))
-        key = b'YELLOW SUBMARINE'
-        iv = b'\x00' * len(key)
-
-        # decrypt the test file
-        d = decrypt(data, key, iv)
-        with open(filename+'.out', 'wb') as outf:
-            outf.write(d)
-
-        # then encrypt it again and diff
-        e = encrypt(d, key, iv)
-
-        if e == data:
-            print("VERIFIED!")
-        else:
-            print("ERROR - original differs from encrypted")
-            print(bxor(d, e))
-
 
 def decrypt(data, key, iv):
+
+    if type(data) != bytes:
+        raise ValueError('Data is not bytes type!')
+
+    if type(key) != bytes:
+        raise ValueError('Key is not bytes type!')
+
+    if type(iv) != bytes:
+        raise ValueError('iv is not bytes type!')
+
     data = iv + data
-    bsize = len(key)    
+    bsize = len(key)
+
+    if len(data) % bsize != 0:
+        raise ValueError('Length of data is not a multiple of length of key!')
+
+    if len(iv) != bsize:
+        raise ValueError('Length of iv is not same as length of key!')
+    
     blocks = [data[i:i+bsize] for i in range(0, len(data)-bsize+1, bsize)]
     cipher = Cipher(algorithms.AES(key), modes.ECB(), backend=default_backend())
     
@@ -43,11 +39,21 @@ def decrypt(data, key, iv):
         ptext_blocks.append(cur) 
 
     ptext_blocks.reverse()
-    return b''.join(ptext_blocks)
+    return (b''.join(ptext_blocks)).decode('utf-8')
 
 
 def encrypt(data, key, iv):
+    if (type(data) != str) & (type(data) != bytes):
+        raise ValueError('Data is neither string nor bytes!')
+
     bsize = len(key)
+
+    if len(data) % bsize != 0:
+        raise ValueError('Length of data is not multiple of length of key!')
+
+    if len(iv) != bsize:
+        raise ValueError('Length of iv is not same as length of key!')
+    
     blocks = [data[i:i+bsize] for i in range(0, len(data)-bsize+1, bsize)]
     cipher = Cipher(algorithms.AES(key), modes.ECB(), backend=default_backend())
 
@@ -63,7 +69,3 @@ def encrypt(data, key, iv):
 
     ctext_blocks.pop(0) # because this would be the iv block
     return b''.join(ctext_blocks)
-
-
-if __name__=='__main__':
-    main()
