@@ -63,7 +63,7 @@ def decrypt(data, desired):
     dat = data[len(data) - bsize:len(data)]
     result = [dat]
     for i in range(len(data), 0, -bsize):
-        des = desired[i - bsize:i]
+        des = desired[i - bsize :i]
         decrypted_dat = CBC.decrypt(dat, key, iv)
         dat = bxor(des, decrypted_dat)
         result.append(dat)
