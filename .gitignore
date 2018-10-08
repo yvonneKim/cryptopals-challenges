@@ -108,5 +108,8 @@ venv.bak/
 # mypy
 .mypy_cache/
 
-#dot files
+# dot files
 .*
+
+# emacs auto-saves
+\#*

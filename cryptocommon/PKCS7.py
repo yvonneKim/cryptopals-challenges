@@ -20,7 +20,8 @@ def isPaddedPKCS7(text, bsize):
 
     pad_byte = text[-1:]
     pad_byte_as_int = int.from_bytes(pad_byte, 'big', signed=True)
-    if pad_byte_as_int > 15:
+    print(pad_byte_as_int)
+    if (pad_byte_as_int > bsize) | (pad_byte_as_int < 1):
         return True
 
     padding = (text[-pad_byte_as_int:])
@@ -31,8 +32,10 @@ def stripPaddingPKCS7(text, bsize):
     """ Takes in plaintext as bytes and blocksize, returning the text without PKCS7 padding.
         This assumes that the plaintext is PKCS7 padding- verify before calling this.
     """
-    pad_length = int(text[-1:])
+    pad_length = int.from_bytes(text[-1:], 'big', signed=True)
 
+    if pad_length == 0:
+        return text
     return text[:-pad_length]
 
 
