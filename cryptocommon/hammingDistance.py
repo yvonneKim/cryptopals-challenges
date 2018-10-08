@@ -4,7 +4,7 @@
 def hammingDistance(s1, s2):    
 
     if len(s1) != len(s2):
-        raise ValueError("bytes not same length")
+        raise ValueError("Bytes not same length!")
 
     if type(s1) == str:
         s1 = s1.encode('utf-8')

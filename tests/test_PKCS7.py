@@ -176,5 +176,13 @@ class TestPKCS7(object):
         result = PKCS7.padPKCS7(test_data, bsize)
 
         assert result == expected_data
+
+    def test_padPKCS7_4(self):
+        test_data = 'x'*15
+        expected_data = b'x'*15 + bytes([1])
+        bsize = 16
+        result = PKCS7.padPKCS7(test_data, bsize)
+
+        assert result == expected_data
         
 

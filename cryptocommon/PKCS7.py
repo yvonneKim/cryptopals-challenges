@@ -54,5 +54,8 @@ def padPKCS7(data, bsize):
         If text's size is a multiple of bsize, add a full block of padding (\x16)    
     """
 
+    if type(data) == str:
+        data = data.encode('utf-8')
+        
     c = (bsize - (len(data) % bsize))
     return data + (c*bytes([c]))
