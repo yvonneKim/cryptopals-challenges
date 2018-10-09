@@ -16,35 +16,37 @@ Then, run:
 ```pytest```
 
 Or, with special coverage sauce:
+
 ```pytest --verbose --cov=<path-to-directory> .```
 
 ## Files 
-:heavy_check_mark: - Tested
-~~crossed out~~    - Done!
+:ok_hand: - Tested
+
+:heavy_check_mark: - Challenge Complete
 
 ### cryptocommon
-- AES_CBC :heavy_check_mark:
-- AES_ECB :heavy_check_mark:
-- byteXor :heavy_check_mark:
-- hammingDistance :heavy_check_mark:
-- PKCS7 :heavy_check_mark:
+- AES_CBC :ok_hand:
+- AES_ECB :ok_hand:
+- byteXor :ok_hand:
+- hammingDistance :ok_hand:
+- PKCS7 :ok_hand:
 
 ### Set 1
-1. ~~Convert hex to base64~~ 
-2. ~~Fixed XOR~~
-3. ~~Single-byte XOR cipher~~
-4. ~~Detect single-character XOR~~
-5. ~~Implement repeating-key XOR~~
-6. ~~Break repeating-key XOR~~
-7. ~~AES in ECB mode~~
-8. ~~Detect AES in ECB mode~~
+1. Convert hex to base64 :heavy_check_mark:
+2. Fixed XOR :heavy_check_mark:
+3. Single-byte XOR cipher :heavy_check_mark:
+4. Detect single-character XOR :heavy_check_mark:
+5. Implement repeating-key XOR :heavy_check_mark:
+6. Break repeating-key XOR :heavy_check_mark:
+7. AES in ECB mode :heavy_check_mark:
+8. Detect AES in ECB mode :heavy_check_mark:
 
 ### Set 2
-1. ~~Implement PKCS#7 padding~~
-2. ~~Implement CBC mode~~
-3. ~~An ECB/CBC detection oracle~~
-4. ~~Byte-at-a-time ECB decryption (Simple)~~
-5. ~~ECB cut-and-paste~~
-6. ~~Byte-at-a-time ECB decryption (Harder)~~
-7. ~~PKCS#7 padding validation~~
-8. ~~CBC bitflipping attacks~~
+1. Implement PKCS#7 padding :heavy_check_mark:
+2. Implement CBC mode :heavy_check_mark:
+3. An ECB/CBC detection oracle :heavy_check_mark:
+4. Byte-at-a-time ECB decryption (Simple) :heavy_check_mark:
+5. ECB cut-and-paste :heavy_check_mark:
+6. Byte-at-a-time ECB decryption (Harder) :heavy_check_mark:
+7. PKCS#7 padding validation :heavy_check_mark:
+8. CBC bitflipping attacks :heavy_check_mark:
