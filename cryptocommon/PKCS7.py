@@ -6,22 +6,24 @@ import math
 
 def isPaddedPKCS7(text, bsize):
     """ Takes in plaintext as bytes and blocksize and returns whether it has valid PKCS7 padding.
-        Input where there is no padding is considered valid. (\x00 * 0 times)
+        Input where there is no padding is considered invalid- it expects the padder will
+        append an entire block of padding for any data that's a multiple of the blocksize.
+
         Input that is not a multiple of bsize is considered invalid.
     """
     if type(text) is str:
         text = text.encode('utf-8')
 
-    if type(text) is not bytes:
+    elif type(text) is not bytes:
         raise TypeError('Is neither string nor bytes!')
 
     if len(text) % bsize != 0:
         return False
 
     pad_byte = text[-1:]
-    pad_byte_as_int = int.from_bytes(pad_byte, 'big', signed=True)
+    pad_byte_as_int = int.from_bytes(pad_byte, 'big', signed=False)
     if (pad_byte_as_int > bsize) | (pad_byte_as_int < 1):
-        return True
+        return False
 
     padding = (text[-pad_byte_as_int:])
     return padding == pad_byte*pad_byte_as_int
@@ -31,7 +33,7 @@ def stripPaddingPKCS7(text, bsize):
     """ Takes in plaintext as bytes and blocksize, returning the text without PKCS7 padding.
         This assumes that the plaintext is PKCS7 padding- verify before calling this.
     """
-    pad_length = int.from_bytes(text[-1:], 'big', signed=True)
+    pad_length = int.from_bytes(text[-1:], 'big', signed=False)
 
     if pad_length == 0:
         return text

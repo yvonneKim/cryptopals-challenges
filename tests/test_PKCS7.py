@@ -14,7 +14,7 @@ class TestPKCS7(object):
         bsize = 16
         result = PKCS7.isPaddedPKCS7(test_data, bsize)
 
-        assert result == True
+        assert result == False
 
     def test_isPaddedPKCS7_2(self):
         test_data = b'x'*15 + bytes([1])
@@ -49,14 +49,14 @@ class TestPKCS7(object):
         bsize = 7
         result = PKCS7.isPaddedPKCS7(test_data, bsize)
 
-        assert result == True
+        assert result == False
 
     def test_isPaddedPKCS7_7(self):
         test_data = bytes([0])*16
         bsize = 16
         result = PKCS7.isPaddedPKCS7(test_data, bsize)
-        assert result == True
-
+        assert result == False
+        
     # stripPaddingPKCS7():
     def test_stripPaddingPKCS7_1(self):
         test_data = bytes([0])*16
@@ -149,9 +149,8 @@ class TestPKCS7(object):
         test_data = bytes([0]) * 16
         expected_data = test_data
         bsize = 16
-        result = PKCS7.stripIfPaddedPKCS7(test_data, bsize)        
-
-        assert result == expected_data
+        with pytest.raises(ValueError):
+            PKCS7.stripIfPaddedPKCS7(test_data, bsize)        
 
     def test_padPKCS7_1(self):
         test_data = b'x'*5

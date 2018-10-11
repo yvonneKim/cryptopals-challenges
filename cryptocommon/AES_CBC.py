@@ -39,7 +39,7 @@ def decrypt(data, key, iv):
         ptext_blocks.append(cur) 
 
     ptext_blocks.reverse()
-    return (b''.join(ptext_blocks)).decode('utf-8')
+    return b''.join(ptext_blocks)
 
 
 def encrypt(data, key, iv):

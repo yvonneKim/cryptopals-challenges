@@ -18,7 +18,7 @@ class TestAES_CBC(object):
         result = dec(encrypted, key, iv)
 
         assert len(result) == 16
-        assert type(result) == str
+
 
     def test_decrypt_invalid_data(self):
         data = 'x'*16
