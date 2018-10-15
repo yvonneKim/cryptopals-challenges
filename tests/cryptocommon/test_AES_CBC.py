@@ -2,7 +2,7 @@ import sys
 import os
 import pytest
 
-sys.path.append(os.path.abspath("../cryptocommon"))
+sys.path.append(os.path.abspath("../../cryptocommon"))
 
 from AES_CBC import decrypt as dec
 from AES_CBC import encrypt as enc

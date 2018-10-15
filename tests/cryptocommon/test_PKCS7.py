@@ -2,7 +2,7 @@ import sys
 import os
 import pytest
 
-sys.path.append(os.path.abspath("../cryptocommon"))
+sys.path.append(os.path.abspath("../../cryptocommon"))
 
 PKCS7 = __import__("PKCS7")
 
