@@ -2,14 +2,14 @@ import sys
 import os
 import pytest
 
-sys.path.append(os.path.abspath("../../src/cryptocommon"))
+sys.path.append(os.path.abspath("../src/cryptocommon"))
 
 from byteXor import xor
 
 
 class TestByteXor(object):
     def test_invalid_inputs(self):
-        with pytest.raises(TypeError):
+        with pytest.raises(ValueError):
             result = xor(34, 'test')
 
     def test_valid_inputs(self):
