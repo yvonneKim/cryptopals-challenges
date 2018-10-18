@@ -7,17 +7,11 @@ pip install and you should be fine
 ```python <file.py> [input-if-it-needs-one]```
 
 ## Testing
-First, be in the test directory:
+run ```pytest``` from root for all tests
 
-```cd tests/```
+to run individual tests, do:
 
-Then, run:
-
-```pytest```
-
-Or, with special coverage sauce:
-
-```pytest --verbose --cov=<path-to-directory> .```
+```pytest test_setup.py tests/<path-to-test>```
 
 ## Files 
 :ok_hand: - Tested
