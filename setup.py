@@ -4,7 +4,7 @@ setup(name='cryptocommon',
       version='0.1',
       description='Crypto stuff for crypto pals!',
       url='',
-      author='Seymour Buutie',
+      author='Yvonne Kim',
       packages=['cryptocommon'],
       zip_safe=False      
 )
