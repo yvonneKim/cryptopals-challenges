@@ -4,6 +4,7 @@ import pytest
 
 sys.path.append(os.path.abspath("../../src/cryptocommon"))
 
+
 PKCS7 = __import__("PKCS7")
 
 
@@ -82,6 +83,7 @@ class TestPKCS7(object):
 
         assert result == expected_data
 
+
     def test_stripPaddingPKCS7_4(self):
         test_data = b'x'*16 + bytes([16])*16
         expected_data = b'x'*16
@@ -150,6 +152,7 @@ class TestPKCS7(object):
         bsize = 16
         with pytest.raises(ValueError):
             PKCS7.stripIfPaddedPKCS7(test_data, bsize)
+
 
     def test_padPKCS7_1(self):
         test_data = b'x'*5
