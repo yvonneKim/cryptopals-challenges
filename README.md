@@ -13,6 +13,10 @@ to run individual tests, do:
 
 ```pytest test_setup.py tests/<path-to-test>```
 
+To get a coverage report (from root):
+
+```pytest --verbose --cov=<path-to-directory>```
+
 ## Files 
 :ok_hand: - Tested
 
@@ -23,14 +27,14 @@ to run individual tests, do:
 - AES_ECB :ok_hand:
 - byteXor :ok_hand:
 - hammingDistance :ok_hand:
-- PKCS7 :ok_hand:
+- PKCS7
 
 ### Set 1
-1. Convert hex to base64 :heavy_check_mark:
-2. Fixed XOR :heavy_check_mark:
-3. Single-byte XOR cipher :heavy_check_mark:
-4. Detect single-character XOR :heavy_check_mark:
-5. Implement repeating-key XOR :heavy_check_mark:
+1. Convert hex to base64 :heavy_check_mark: :ok_hand:
+2. Fixed XOR :heavy_check_mark: :ok_hand:
+3. Single-byte XOR cipher :heavy_check_mark: :ok_hand:
+4. Detect single-character XOR :heavy_check_mark: :ok_hand:
+5. Implement repeating-key XOR :heavy_check_mark: :ok_hand:
 6. Break repeating-key XOR :heavy_check_mark:
 7. AES in ECB mode :heavy_check_mark:
 8. Detect AES in ECB mode :heavy_check_mark:
