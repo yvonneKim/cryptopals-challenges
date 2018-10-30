@@ -8,22 +8,35 @@ class CBC(object):
     def __init__(self, key, nonce, counter):
         self.key = key
         self.bsize = len(self.key)
+
+        if len(nonce) != (len(key)/2):
+            raise ValueError('Nonce is not half of the key length!')
+
         self.nonce = nonce
         self.counter = counter
 
     def encrypt(self, plaintext):
         key = self.key
         bsize = self.bsize
-        nonce = self.nonce
+        nonce_part = self.nonce
         counter = self.counter
 
         for i in range(0, ceil(len(plaintext) / bsize)):
-            # TODO Fix this for nonce's not just all zeroes
-            print(nonce)
-            print(bytes([next(counter)]))
+            xor_block = self.__get_xor_block(nonce, next(counter))
+            print(xor_block)
 
-            counter_block = int.from_bytes(nonce, byteorder='little') & int(next(counter))
-            print(counter_block)
+    def __get_xor_block(self, nonce, count):
+        """
+        Nonce must be bytes string. Count is an int or long.
+        Returns bytes string that concats nonce + (count as half-bsize byte string)
+        """
+
+        half_bsize = len(nonce) // 2
+        
+        count = count.to_bytes(half_bsize, byteorder='big')
+        xor_block = nonce + count
+
+        return xor_block
 
 
 if __name__ == "__main__":
