@@ -4,7 +4,7 @@ from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.backends import default_backend
 
 
-class CBC(object):
+class CTR(object):
     def __init__(self, key, nonce, counter):
         self.key = key
         self.bsize = len(self.key)
@@ -17,22 +17,22 @@ class CBC(object):
 
     def encrypt(self, plaintext):
         key = self.key
+        nonce = self.nonce
         bsize = self.bsize
-        nonce_part = self.nonce
         counter = self.counter
 
         for i in range(0, ceil(len(plaintext) / bsize)):
             xor_block = self.__get_xor_block(nonce, next(counter))
             print(xor_block)
 
-    def __get_xor_block(self, nonce, count):
+    def get_xor_block(self, nonce, count):
         """
         Nonce must be bytes string. Count is an int or long.
-        Returns bytes string that concats nonce + (count as half-bsize byte string)
+        Both must be the same size in bytes- half of the overall bsize.
+        Returns bytes string that concats nonce + count.
         """
 
-        half_bsize = len(nonce) // 2
-        
+        half_bsize = len(nonce)        
         count = count.to_bytes(half_bsize, byteorder='big')
         xor_block = nonce + count
 
