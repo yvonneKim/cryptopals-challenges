@@ -20,7 +20,7 @@ class TestCTR():
         count = 1
         result = ctr.get_xor_block(nonce, count)
 
-        expected = (b'\x00' * 7) + b'\x01'
+        expected = b'\x00\x00\x00\x00\x01\x00\x00\x00'
         assert expected == result
 
     def test_get_xor_block_valid_2(self, ctr):
@@ -28,6 +28,6 @@ class TestCTR():
         count = 2222
         result = ctr.get_xor_block(nonce, count)
 
-        expected = b'abcd' + b'\x00\x00\x08\xae'
+        expected = b'abcd' + b'\xae\x08\x00\x00'
         assert expected == result
         

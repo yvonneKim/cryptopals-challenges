@@ -22,8 +22,8 @@ class CTR(object):
         counter = self.counter
 
         for i in range(0, ceil(len(plaintext) / bsize)):
-            xor_block = self.__get_xor_block(nonce, next(counter))
-            print(xor_block)
+            xor_block = self.get_xor_block(nonce, next(counter))
+            
 
     def get_xor_block(self, nonce, count):
         """
@@ -33,7 +33,7 @@ class CTR(object):
         """
 
         half_bsize = len(nonce)        
-        count = count.to_bytes(half_bsize, byteorder='big')
+        count = count.to_bytes(half_bsize, byteorder='little')
         xor_block = nonce + count
 
         return xor_block
@@ -41,7 +41,7 @@ class CTR(object):
 
 if __name__ == "__main__":
     key = 'YELLOW SUBMARINE'
-    nonce = b'0' * int(len(key)/2)
+    nonce = bytes([0]) * int(len(key)/2)
     counter = count()
-    cbc = CBC(key, nonce, counter)
-    cbc.encrypt('oraoraoraoraoraoraoraoraoraoraoraoraoroaoraorroaroaorao')
+    ctr = CTR(key, nonce, counter)
+    ctr.encrypt('oraoraoraoraoraoraoraoraoraoraoraoraoroaoraorroaroaorao')
