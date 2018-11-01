@@ -1,7 +1,13 @@
 from math import ceil
 from itertools import count
-from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
-from cryptography.hazmat.backends import default_backend
+import sys
+import os
+
+sys.path.append(os.path.abspath("src/cryptocommon"))
+from byteXor import xor
+from blocks import Blocks
+from AES_ECB import encryptor as enc
+from AES_ECB import decryptor as dec
 
 
 class CTR(object):
@@ -20,11 +26,18 @@ class CTR(object):
         nonce = self.nonce
         bsize = self.bsize
         counter = self.counter
-
-        for i in range(0, ceil(len(plaintext) / bsize)):
+        blocks = Blocks(plaintext).get_iterator()
+        encrypted_blocks = []
+        
+        for plaintext_block in blocks:
             xor_block = self.get_xor_block(nonce, next(counter))
-            
+            encrypted_xor_block = enc(xor_block, key, bsize, padded=False)
+            encrypted_xor_block = encrypted_xor_block[:len(plaintext_block)]
+            cipher_block = xor(encrypted_xor_block, plaintext_block)
+            encrypted_blocks.append(cipher_block)
 
+        return b''.join(encrypted_blocks)
+            
     def get_xor_block(self, nonce, count):
         """
         Nonce must be bytes string. Count is an int or long.
@@ -32,7 +45,7 @@ class CTR(object):
         Returns bytes string that concats nonce + count.
         """
 
-        half_bsize = len(nonce)        
+        half_bsize = len(nonce)
         count = count.to_bytes(half_bsize, byteorder='little')
         xor_block = nonce + count
 
@@ -40,8 +53,10 @@ class CTR(object):
 
 
 if __name__ == "__main__":
-    key = 'YELLOW SUBMARINE'
+    key = b'YELLOW SUBMARINE'
+    plaintext = 'oraoraoraoraoraoraoraoraoraoraoraoraoroaoraorroaroaorao'
     nonce = bytes([0]) * int(len(key)/2)
     counter = count()
     ctr = CTR(key, nonce, counter)
-    ctr.encrypt('oraoraoraoraoraoraoraoraoraoraoraoraoroaoraorroaroaorao')
+    encrypted = ctr.encrypt(plaintext)
+    print(encrypted)
