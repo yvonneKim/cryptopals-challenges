@@ -1,5 +1,5 @@
 from math import ceil
-from itertools import count
+from itertools import count, tee
 import sys
 import os
 
@@ -21,23 +21,43 @@ class CTR(object):
         self.nonce = nonce
         self.counter = counter
 
+    def decrypt(self, ciphertext):
+        key = self.key
+        nonce = self.nonce
+        bsize = self.bsize
+        counter = self.counter()
+        blocks = Blocks(ciphertext).get_iterator()
+        decrypted_blocks = []
+
+        for ciphertext_block in blocks:
+            nextCount = next(counter)
+            xor_block = self.get_xor_block(nonce, nextCount)
+            encrypted_xor_block = enc(xor_block, key, bsize, padded=False)
+            encrypted_xor_block = encrypted_xor_block[:len(ciphertext_block)]
+            plaintext_block = xor(encrypted_xor_block, ciphertext_block)
+            decrypted_blocks.append(plaintext_block)
+
+        result = b''.join(decrypted_blocks)
+        return result.decode('utf-8')
+
     def encrypt(self, plaintext):
         key = self.key
         nonce = self.nonce
         bsize = self.bsize
-        counter = self.counter
+        counter = self.counter()
         blocks = Blocks(plaintext).get_iterator()
         encrypted_blocks = []
-        
+
         for plaintext_block in blocks:
-            xor_block = self.get_xor_block(nonce, next(counter))
+            nextCount = next(counter)
+            xor_block = self.get_xor_block(nonce, nextCount)
             encrypted_xor_block = enc(xor_block, key, bsize, padded=False)
             encrypted_xor_block = encrypted_xor_block[:len(plaintext_block)]
             cipher_block = xor(encrypted_xor_block, plaintext_block)
             encrypted_blocks.append(cipher_block)
 
         return b''.join(encrypted_blocks)
-            
+
     def get_xor_block(self, nonce, count):
         """
         Nonce must be bytes string. Count is an int or long.
@@ -54,9 +74,11 @@ class CTR(object):
 
 if __name__ == "__main__":
     key = b'YELLOW SUBMARINE'
-    plaintext = 'oraoraoraoraoraoraoraoraoraoraoraoraoroaoraorroaroaorao'
+    ciphertext = 'L77na/nrFsKvynd6HzOoG7GHTLXsTVu9qvY/2syLXzhPweyyMTJULu/6/kXX0KSvoOLSFQ=='
     nonce = bytes([0]) * int(len(key)/2)
-    counter = count()
+    counter = count
     ctr = CTR(key, nonce, counter)
-    encrypted = ctr.encrypt(plaintext)
-    print(encrypted)
+    decrypted = ctr.decrypt(ciphertext)
+    print(len(decrypted))
+    print(len(ciphertext))
+    print(decrypted)
