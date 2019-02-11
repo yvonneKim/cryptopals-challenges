@@ -7,7 +7,7 @@ from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.backends import default_backend
 
 
-def decryptor(data, key, bsize):
+def decryptor(data, key, bsize=16):
     if type(data) != bytes:
         raise ValueError('Not a \'bytes\' type!')
 
@@ -21,7 +21,7 @@ def decryptor(data, key, bsize):
     return ptext.decode('utf-8')
 
 
-def encryptor(data, key, bsize, padded=True):
+def encryptor(data, key, bsize=16, padded=True):
     """
     Takes plaintext, key, block size, and whether to PKCS7 pad.
     By default, it will pad, as it's safer. It can be set to False for
@@ -29,8 +29,8 @@ def encryptor(data, key, bsize, padded=True):
 
     Returns the encrypted ciphertext.
     """
-    if (type(data) != bytes) & (type(data) != str):
-        raise ValueError('Data is neither bytes nor string!')
+    if (type(data) != bytes) & (type(data) != str) & (type(data) != bytearray):
+        raise ValueError('Data is neither byte-like nor string!')
 
     if type(data) == str:
         data = data.encode('utf-8')
